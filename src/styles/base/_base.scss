@@ -1,0 +1,75 @@
+
+@font-face {
+  font-family: "Text";
+  src: url("../assets/fonts/Supreme-Variable.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Titre";
+  src: url("../assets/fonts/ClashDisplay-Variable.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 100dvh;
+  min-height: 100dvh;
+
+
+  background-color: var(--bg);
+  background-image: radial-gradient(70rem 40rem at 78% -8%, var(--accent-soft), transparent 62%), radial-gradient(50rem 34rem at 0% 12%, rgba(255, 255, 255, 0.045), transparent 60%), linear-gradient(180deg, var(--bg-2), var(--bg) 55%);
+  font-family: "Text", sans-serif;
+  overflow-x: hidden;
+}
+
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Titre", "Text", sans-serif;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--text);
+}
+
+h1 {
+  font-size: clamp(2.6rem, 7vw, 5rem);
+}
+h2 {
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+}
+h3 {
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+}
+
+p {
+  margin: 0;
+  color: var(--text-2);
+}
+
+strong {
+  color: var(--text);
+  font-weight: 600;
+}
+

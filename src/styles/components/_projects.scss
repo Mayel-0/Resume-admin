@@ -1,0 +1,13 @@
+.projects {
+  &__grid {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+  &__more {
+    display: flex;
+    justify-content: center;
+    margin-top: 2.5rem;
+  }
+}

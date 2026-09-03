@@ -1,0 +1,12 @@
+.skills {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+  h3 {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+}
+
+

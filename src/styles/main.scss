@@ -1,0 +1,16 @@
+@use './abstracts/variables' as *;
+@use 'base/utilities';
+@use './base/base';
+
+@use './components/header';
+@use './components/hero';
+@use './components/about';
+@use './components/parcours';
+@use './components/skills';
+@use './components/contacts';
+@use './components/footer';
+
+@use './components/projects';
+@use './components/projectCard';
+
+@use './pages/home'
