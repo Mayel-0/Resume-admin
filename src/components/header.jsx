@@ -9,10 +9,14 @@ function Header() {
           <span>Maël LLADO</span>
         </a>
 
+        <div className="header__labelAdmin">
+          <span>Admin</span>
+        </div>
+
         <nav className="header__nav" aria-label="Navigation principale">
           <a
           href="#apropos"
-          
+
           >À propos</a>
           <a href="#parcours">Parcours</a>
           <a href="#competences">Compétences</a>

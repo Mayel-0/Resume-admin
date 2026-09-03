@@ -12,6 +12,16 @@
     border-color 0.3s var(--ease),
     background 0.3s var(--ease);
 
+  &__labelAdmin {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid red;
+    border-radius: 18px;
+    color: red;
+  }
+
   &__inner {
     width: var(--shell);
     margin-inline: auto;
