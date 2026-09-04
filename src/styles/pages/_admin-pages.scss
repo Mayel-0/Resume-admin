@@ -1,0 +1,181 @@
+@use "../abstracts/variables" as *;
+
+.admin-profile,
+.admin-sections,
+.admin-project,
+.admin-timeline,
+.admin-socials,
+.admin-skills {
+  width: 100%;
+}
+
+.admin-profil__field {
+  max-width: 52rem;
+}
+
+.admin-profil__field,
+.admin-sections__field,
+.admin-project__field,
+.admin-timeline__field {
+  margin-bottom: 1rem;
+}
+
+.admin-sections__inner,
+.admin-project__inner,
+.admin-timeline__inner,
+.admin-socials__inner,
+.admin-skills__inner {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.admin-project__create,
+.admin-project__list {
+  min-width: 0;
+}
+
+.admin-sections__create,
+.admin-project__create,
+.admin-timeline__create,
+.admin-socials__create,
+.admin-skills__create {
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: $color-surface;
+  box-shadow: $shadow-soft;
+  padding: 1rem;
+}
+
+.admin-sections__list,
+.admin-project__list,
+.admin-timeline__list,
+.admin-socials__list,
+.admin-skills__list {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-sections__card,
+.admin-project__card,
+.admin-timeline__card,
+.admin-socials__list article,
+.admin-skills__card {
+  min-width: 0;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: $color-surface;
+  padding: 1rem;
+}
+
+.admin-skills__create {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-skills__create h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.admin-skills__create h3:not(:first-child) {
+  margin-top: 0.75rem;
+  border-top: 1px solid $color-border;
+  padding-top: 1rem;
+}
+
+.admin-skills__category-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid $color-border;
+  padding-bottom: 0.75rem;
+}
+
+.admin-skills__category-header .admin-skills__field {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.admin-skills__category-header > button,
+.admin-skills__item > button {
+  flex: 0 0 auto;
+  margin-top: 1.55rem;
+  background: transparent;
+  border: 1px solid $color-danger;
+  color: $color-danger;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.8rem;
+}
+
+.admin-skills__category-header > button:hover,
+.admin-skills__item > button:hover {
+  background: $color-danger-soft;
+}
+
+.admin-skills__items {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.admin-skills__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.admin-skills__item .editable-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-skills__item > button {
+  margin-top: 0.55rem;
+}
+
+.admin-sections__card > button,
+.admin-project__card > button,
+.admin-socials__list article > button {
+  margin-top: 0.35rem;
+  background: transparent;
+  border: 1px solid $color-danger;
+  color: $color-danger;
+}
+
+.admin-sections__card > button:hover,
+.admin-project__card > button:hover,
+.admin-socials__list article > button:hover {
+  background: $color-danger-soft;
+}
+
+.admin-project hr {
+  display: none;
+}
+
+.admin-timeline__card {
+  position: relative;
+  border-left: 4px solid $color-primary;
+}
+
+@media (min-width: $breakpoint-desktop) {
+  .admin-sections__inner,
+  .admin-project__inner,
+  .admin-timeline__inner,
+  .admin-socials__inner,
+  .admin-skills__inner {
+    grid-template-columns: minmax(18rem, 0.8fr) minmax(0, 1.6fr);
+    align-items: start;
+  }
+
+  .admin-sections__create,
+  .admin-project__create,
+  .admin-timeline__create,
+  .admin-socials__create,
+  .admin-skills__create {
+    position: sticky;
+    top: 1.5rem;
+  }
+}

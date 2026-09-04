@@ -1,0 +1,53 @@
+@use "../abstracts/variables" as *;
+
+form {
+  display: grid;
+  gap: 0.8rem;
+}
+
+form > button[type="submit"] {
+  justify-self: start;
+  margin-top: 0.3rem;
+}
+
+.admin-sections__create form,
+.admin-project__create form,
+.admin-timeline__create form,
+.admin-socials__create form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+}
+
+.admin-sections__create form > label,
+.admin-project__create form > label,
+.admin-timeline__create form > label,
+.admin-socials__create form > label {
+  grid-column: span 1;
+}
+
+.admin-sections__create form > textarea,
+.admin-sections__create form > button,
+.admin-project__create form > button,
+.admin-timeline__create form > textarea,
+.admin-timeline__create form > button,
+.admin-socials__create form > button {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 600px) {
+  .admin-sections__create form,
+  .admin-project__create form,
+  .admin-timeline__create form,
+  .admin-socials__create form {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sections__create form > textarea,
+  .admin-sections__create form > button,
+  .admin-project__create form > button,
+  .admin-timeline__create form > textarea,
+  .admin-timeline__create form > button,
+  .admin-socials__create form > button {
+    grid-column: auto;
+  }
+}

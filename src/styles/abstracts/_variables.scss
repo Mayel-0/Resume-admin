@@ -1,25 +1,23 @@
-:root {
-  --text: #f1f2f4;
-  --text-2: #a8adb6;
-  --text-3: #6f757e;
+$color-ink: #17212b;
+$color-muted: #687684;
+$color-subtle: #f4f7f9;
+$color-surface: #ffffff;
+$color-border: #d9e1e7;
+$color-primary: #176b87;
+$color-primary-dark: #0f4d63;
+$color-danger: #b44747;
+$color-danger-soft: #fff2f2;
+$color-success: #1f7a58;
+$color-focus: rgba(23, 107, 135, 0.18);
+$color-sidebar: #1c2a35;
 
-  --accent: #09bcf5;
-  --accent-soft: color-mix(in srgb, var(--accent) 14%, transparent);
-  --accent-line: color-mix(in srgb, var(--accent) 32%, transparent);
-  --accent-ink: color-mix(in srgb, var(--accent) 92%, white 8%);
+$font-body: "Avenir Next", "Segoe UI", sans-serif;
+$font-heading: "Avenir Next", "Segoe UI", sans-serif;
 
-  --surface: rgba(255, 255, 255, 0.032);
-  --surface-strong: rgba(255, 255, 255, 0.055);
-  --border: rgba(255, 255, 255, 0.09);
-  --border-strong: rgba(255, 255, 255, 0.16);
+$radius-sm: 4px;
+$radius-md: 8px;
+$shadow-soft: 0 8px 24px rgba(23, 33, 43, 0.07);
+$transition-fast: 160ms ease;
 
-  --bg: #0a0b0d;
-  --bg-2: #0f1114;
-
-  --radius: 18px;
-  --radius-lg: 26px;
-  --shell: min(1180px, 100% - 3rem);
-  --header-h: 74px;
-
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
-}
+$breakpoint-tablet: 768px;
+$breakpoint-desktop: 1100px;

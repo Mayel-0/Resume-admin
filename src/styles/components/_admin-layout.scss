@@ -1,0 +1,95 @@
+@use "../abstracts/variables" as *;
+
+.admin {
+  min-height: 100vh;
+  background: $color-subtle;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 4.25rem;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: $color-sidebar;
+    color: $color-surface;
+  }
+
+  &__header-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+  }
+
+  &__logout {
+    padding: 0.55rem 0.8rem;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: 0.85rem;
+  }
+
+  &__logout:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  &__body {
+    display: flex;
+    min-height: calc(100vh - 4.25rem);
+    flex-direction: column;
+  }
+
+  &__sidebar {
+    display: flex;
+    gap: 0.3rem;
+    overflow-x: auto;
+    padding: 0.7rem;
+    background: $color-sidebar;
+  }
+
+  &__sidebar a {
+    flex: 0 0 auto;
+    border-radius: $radius-sm;
+    color: rgba(255, 255, 255, 0.78);
+    padding: 0.65rem 0.8rem;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background-color $transition-fast, color $transition-fast;
+  }
+
+  &__sidebar a:hover,
+  &__sidebar a.active {
+    background: $color-primary;
+    color: $color-surface;
+  }
+
+  &__content {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 1.25rem 1rem 2rem;
+  }
+}
+
+@media (min-width: $breakpoint-tablet) {
+  .admin {
+    &__header {
+      padding: 0.75rem 2rem;
+    }
+
+    &__body {
+      flex-direction: row;
+    }
+
+    &__sidebar {
+      width: 14rem;
+      flex-direction: column;
+      flex-shrink: 0;
+      gap: 0.4rem;
+      overflow: visible;
+      padding: 1.25rem 0.85rem;
+    }
+
+    &__content {
+      padding: 2rem;
+    }
+  }
+}

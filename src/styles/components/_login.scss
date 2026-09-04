@@ -1,0 +1,44 @@
+@use "../abstracts/variables" as *;
+
+.login {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 1rem;
+  background: $color-subtle;
+
+  &__inner {
+    width: min(100%, 28rem);
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    background: $color-surface;
+    box-shadow: $shadow-soft;
+    padding: clamp(1.5rem, 5vw, 2.5rem);
+  }
+
+  &__title {
+    margin-bottom: 1.5rem;
+  }
+
+  &__form {
+    gap: 0.55rem;
+  }
+
+  &__form label:not(:first-of-type) {
+    margin-top: 0.55rem;
+  }
+
+  &__form button {
+    width: 100%;
+    margin-top: 0.8rem;
+  }
+
+  &__error {
+    margin: 0 0 0.5rem;
+    border-left: 3px solid $color-danger;
+    background: $color-danger-soft;
+    color: $color-danger;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.9rem;
+  }
+}

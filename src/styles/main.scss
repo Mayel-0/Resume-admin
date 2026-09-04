@@ -1,16 +1,7 @@
-@use './abstracts/variables' as *;
-@use 'base/utilities';
-@use './base/base';
-
-@use './components/header';
-@use './components/hero';
-@use './components/about';
-@use './components/parcours';
-@use './components/skills';
-@use './components/contacts';
-@use './components/footer';
-
-@use './components/projects';
-@use './components/projectCard';
-
-@use './pages/home'
+@use "base/reset";
+@use "base/utilities";
+@use "components/admin-layout";
+@use "components/forms";
+@use "components/editable-field";
+@use "components/login";
+@use "pages/admin-pages";
