@@ -138,6 +138,7 @@
 
 .admin-sections__card > button,
 .admin-project__card > button,
+.admin-timeline__card > button,
 .admin-socials__list article > button {
   margin-top: 0.35rem;
   background: transparent;
@@ -147,6 +148,7 @@
 
 .admin-sections__card > button:hover,
 .admin-project__card > button:hover,
+.admin-timeline__card > button:hover,
 .admin-socials__list article > button:hover {
   background: $color-danger-soft;
 }

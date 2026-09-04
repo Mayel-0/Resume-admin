@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useApi } from "../hooks/useApi";
 import { EditableField } from "../components/EditableField";
 import { CreateField } from "../components/CreateField";
+import { DeleteButton } from "../components/DeleteField";
 
 export default function AdminTimeline() {
   const {get} = useApi();
@@ -90,6 +91,10 @@ export default function AdminTimeline() {
                 fieldKey="text"
               />
             </div>
+            <DeleteButton
+              route={`/timeline/${timeline.id}`}
+              onSuccess={loadTimeline}
+            />
           </article>
         ))}
         </div>
