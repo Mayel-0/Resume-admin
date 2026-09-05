@@ -7,24 +7,42 @@ import { DeleteButton } from "../components/DeleteField";
 export default function AdminProjects() {
   const {get} = useApi();
   const [projects, setProject] = useState(null);
+  const [projectTags, setProjectTags] = useState(null);
+  const [projectStack, setProjectStack] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    get("/projects")
-      .then(setProject)
+    Promise.all([
+      get("/projects"),
+      get("/project-tags"),
+      get("/project-tech-stack"),
+    ])
+      .then(([projectsData, tagsData, stackData]) => {
+        setProject(projectsData);
+        setProjectTags(tagsData);
+        setProjectStack(stackData);
+      })
       .catch(setError)
       .finally(() => setLoading(false));
   }, [])
 
   if (loading) return <p>Chargement…</p>;
   if (error)   return <p>Erreur : {error.message}</p>;
-  if (!projects) return <p>Aucun project trouvé.</p>;
+  if (!projects || !projectTags || !projectStack) return <p>Aucun project trouvé.</p>;
 
   const loadProjects = () => {
   setLoading(true);
-  get("/projects")
-    .then(setProject)
+  Promise.all([
+    get("/projects"),
+    get("/project-tags"),
+    get("/project-tech-stack"),
+  ])
+    .then(([projectsData, tagsData, stackData]) => {
+      setProject(projectsData);
+      setProjectTags(tagsData);
+      setProjectStack(stackData);
+    })
     .catch(setError)
     .finally(() => setLoading(false));
 };
@@ -165,6 +183,87 @@ export default function AdminProjects() {
                 fieldKey="linkLabel"
               />
             </div>
+
+            <div className="admin-project__relations">
+              <div className="admin-project__relation">
+                <h3>Tags</h3>
+                <CreateField
+                  route="/project-tags"
+                  currentOrder={0}
+                  onSuccess={loadProjects}
+                  withOrder={false}
+                >
+                  <input type="hidden" name="projectId" value={project.id} />
+                  <label>Ajouter un tag</label>
+                  <input name="tag" type="text" required />
+                </CreateField>
+                <div className="admin-project__relation-list">
+                  {projectTags
+                    .filter((tag) => tag.projectId === project.id)
+                    .map((tag) => (
+                      <div className="admin-project__relation-item" key={tag.id}>
+                        <EditableField
+                          value={tag.tag}
+                          route={`/project-tags/${tag.id}`}
+                          fieldKey="tag"
+                        />
+                        <DeleteButton
+                          route={`/project-tags/${tag.id}`}
+                          onSuccess={loadProjects}
+                        />
+                      </div>
+                    ))}
+                </div>
+              </div>
+
+              <div className="admin-project__relation">
+                <h3>Stack technique</h3>
+                <CreateField
+                  route="/project-tech-stack"
+                  currentOrder={0}
+                  onSuccess={loadProjects}
+                  withOrder={false}
+                >
+                  <input type="hidden" name="projectId" value={project.id} />
+                  <label>Nom</label>
+                  <input name="label" type="text" required />
+                  <label>Type</label>
+                  <select name="type" defaultValue="language" required>
+                    <option value="language">Langage</option>
+                    <option value="framework">Framework / bibliothèque</option>
+                  </select>
+                </CreateField>
+                <div className="admin-project__relation-list">
+                  {projectStack
+                    .filter((stack) => stack.projectId === project.id)
+                    .map((stack) => (
+                      <div className="admin-project__relation-item" key={stack.id}>
+                        <div className="admin-project__relation-field">
+                          <label>Nom</label>
+                          <EditableField
+                            value={stack.label}
+                            route={`/project-tech-stack/${stack.id}`}
+                            fieldKey="label"
+                          />
+                        </div>
+                        <div className="admin-project__relation-field">
+                          <label>Type</label>
+                          <EditableField
+                            value={stack.type}
+                            route={`/project-tech-stack/${stack.id}`}
+                            fieldKey="type"
+                          />
+                        </div>
+                        <DeleteButton
+                          route={`/project-tech-stack/${stack.id}`}
+                          onSuccess={loadProjects}
+                        />
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+
             <DeleteButton
               route={`/projects/${project.id}`}
               onSuccess={loadProjects}

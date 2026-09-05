@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useApi } from "../hooks/useApi";
 
-export function CreateField({ children, route, currentOrder, onSuccess, withSlug = false, withSectionExtras = false}) {
+export function CreateField({ children, route, currentOrder, onSuccess, withSlug = false, withSectionExtras = false, withOrder = true}) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { post } = useApi();
@@ -37,7 +37,9 @@ export function CreateField({ children, route, currentOrder, onSuccess, withSlug
         : `${nextOrder}`;   // "10", "11"...
     }
 
-    data.order = currentOrder + 1;
+    if (withOrder) {
+      data.order = currentOrder + 1;
+    }
     //console.log(data)
 
     try {

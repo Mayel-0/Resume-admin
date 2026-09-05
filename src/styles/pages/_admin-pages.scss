@@ -157,6 +157,73 @@
   display: none;
 }
 
+.admin-project__relations {
+  display: grid;
+  gap: 1rem;
+  margin: 1.25rem 0;
+  border-top: 1px solid $color-border;
+  padding-top: 1.25rem;
+}
+
+.admin-project__relation {
+  min-width: 0;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  background: $color-subtle;
+  padding: 0.85rem;
+}
+
+.admin-project__relation h3 {
+  margin-bottom: 0.8rem;
+  font-size: 1rem;
+}
+
+.admin-project__relation form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  margin-bottom: 0.9rem;
+}
+
+.admin-project__relation form > button {
+  grid-column: 1 / -1;
+}
+
+.admin-project__relation-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.admin-project__relation-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.admin-project__relation-item .editable-field,
+.admin-project__relation-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-project__relation-item > button {
+  flex: 0 0 auto;
+  margin-top: 0.55rem;
+  padding: 0.45rem 0.65rem;
+  background: transparent;
+  border: 1px solid $color-danger;
+  color: $color-danger;
+  font-size: 0.8rem;
+}
+
+.admin-project__relation-item > button:hover {
+  background: $color-danger-soft;
+}
+
+.admin-project__relation-field + .admin-project__relation-field {
+  margin-left: 0.5rem;
+}
+
 .admin-timeline__card {
   position: relative;
   border-left: 4px solid $color-primary;
@@ -179,5 +246,31 @@
   .admin-skills__create {
     position: sticky;
     top: 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-project__relation form {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-project__relation form > button {
+    grid-column: auto;
+  }
+
+  .admin-project__relation-item {
+    flex-wrap: wrap;
+  }
+
+  .admin-project__relation-item > button {
+    margin-top: 0;
+  }
+
+  .admin-project__relation-field {
+    flex-basis: 100%;
+  }
+
+  .admin-project__relation-field + .admin-project__relation-field {
+    margin-left: 0;
   }
 }
