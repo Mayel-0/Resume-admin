@@ -9,7 +9,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${BASE}/admin/me`, {
+    fetch(`${BASE}/auth/me`, {
       credentials: "include",
     })
       .then((res) => {
