@@ -17,8 +17,8 @@ import AdminSkills from "./pages/AdminSkills";
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
 
           {/* Route publique */}
@@ -106,8 +106,8 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
 
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 
