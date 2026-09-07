@@ -1,22 +1,19 @@
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 const BASE = import.meta.env.VITE_API_URL + "/api/admin";
 
 export function useApi() {
-  const { token, logout } = useAuth();
-  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const headers = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
   };
 
   const handleResponse = async (res) => {
     console.log("Response status:", res.status, "for URL:", res.url);
     if (res.status === 401) {
       logout();
-      navigate("/login");
+      window.location.href = "/login";
       return null;
     }
     if (!res.ok) {
@@ -29,14 +26,17 @@ export function useApi() {
 
   const get = (path) => {
     console.log("GET request to:", `${BASE}${path}`);
-    console.log("credentials: include est bien là");
-    fetch(`${BASE}${path}`, { headers }).then(handleResponse);
+    return fetch(`${BASE}${path}`, {
+      headers,
+      credentials: "include",
+    }).then(handleResponse);
   };
 
   const patch = (path, body) =>
     fetch(`${BASE}${path}`, {
       method: "PATCH",
       headers,
+      credentials: "include",
       body: JSON.stringify(body),
     }).then(handleResponse);
 
@@ -44,6 +44,7 @@ export function useApi() {
     fetch(`${BASE}${path}`, {
       method: "POST",
       headers,
+      credentials: "include",
       body: JSON.stringify(body),
     }).then(handleResponse);
 
@@ -51,6 +52,7 @@ export function useApi() {
     fetch(`${BASE}${path}`, {
       method: "DELETE",
       headers,
+      credentials: "include",
     }).then(handleResponse);
 
   return { get, patch, post, del };
