@@ -10,7 +10,6 @@ export function useApi() {
   };
 
   const handleResponse = async (res) => {
-    console.log("Response status:", res.status, "for URL:", res.url);
     if (res.status === 401) {
       logout();
       window.location.href = "/login";
@@ -25,7 +24,6 @@ export function useApi() {
   };
 
   const get = (path) => {
-    console.log("GET request to:", `${BASE}${path}`);
     return fetch(`${BASE}${path}`, {
       headers,
       credentials: "include",
