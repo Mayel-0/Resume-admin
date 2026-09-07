@@ -16,24 +16,15 @@ function Login() {
     setError(null);
     setLoading(true);
 
-
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
+      const res = await login(email, password);
       const data = await res.json();
-
-      // alert(`Status: ${res.status} | Réponse: ${JSON.stringify(data)}`);
 
       if (!res.ok) {
         setError(data.error ?? "Erreur de connexion");
         return;
       }
 
-      login(data.token);
       navigate("/");
     } catch (err) {
       setError("Impossible de joindre le serveur");
