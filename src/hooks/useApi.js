@@ -13,6 +13,7 @@ export function useApi() {
   };
 
   const handleResponse = async (res) => {
+    console.log("Response status:", res.status, "for URL:", res.url);
     if (res.status === 401) {
       logout();
       navigate("/login");
@@ -26,8 +27,11 @@ export function useApi() {
     return res.json();
   };
 
-  const get = (path) =>
+  const get = (path) => {
+    console.log("GET request to:", `${BASE}${path}`);
+    console.log("credentials: include est bien là");
     fetch(`${BASE}${path}`, { headers }).then(handleResponse);
+  };
 
   const patch = (path, body) =>
     fetch(`${BASE}${path}`, {
