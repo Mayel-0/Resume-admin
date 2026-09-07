@@ -5,7 +5,8 @@
 .admin-project,
 .admin-timeline,
 .admin-socials,
-.admin-skills {
+.admin-skills,
+.admin-briefs {
   width: 100%;
 }
 
@@ -24,7 +25,8 @@
 .admin-project__inner,
 .admin-timeline__inner,
 .admin-socials__inner,
-.admin-skills__inner {
+.admin-skills__inner,
+.admin-briefs__inner {
   display: grid;
   gap: 1.5rem;
 }
@@ -38,7 +40,8 @@
 .admin-project__create,
 .admin-timeline__create,
 .admin-socials__create,
-.admin-skills__create {
+.admin-skills__create,
+.admin-briefs__create {
   border: 1px solid $color-border;
   border-radius: $radius-md;
   background: $color-surface;
@@ -50,7 +53,8 @@
 .admin-project__list,
 .admin-timeline__list,
 .admin-socials__list,
-.admin-skills__list {
+.admin-skills__list,
+.admin-briefs__list {
   display: grid;
   gap: 1rem;
 }
@@ -59,7 +63,8 @@
 .admin-project__card,
 .admin-timeline__card,
 .admin-socials__list article,
-.admin-skills__card {
+.admin-skills__card,
+.admin-briefs__card {
   min-width: 0;
   border: 1px solid $color-border;
   border-radius: $radius-md;
@@ -229,12 +234,17 @@
   border-left: 4px solid $color-primary;
 }
 
+.admin-briefs__field {
+  margin-bottom: 1rem;
+}
+
 @media (min-width: $breakpoint-desktop) {
   .admin-sections__inner,
   .admin-project__inner,
   .admin-timeline__inner,
   .admin-socials__inner,
-  .admin-skills__inner {
+  .admin-skills__inner,
+  .admin-briefs__inner {
     grid-template-columns: minmax(18rem, 0.8fr) minmax(0, 1.6fr);
     align-items: start;
   }
@@ -243,7 +253,8 @@
   .admin-project__create,
   .admin-timeline__create,
   .admin-socials__create,
-  .admin-skills__create {
+  .admin-skills__create,
+  .admin-briefs__create {
     position: sticky;
     top: 1.5rem;
   }

@@ -31,6 +31,7 @@ export function AdminLayout({ children }) {
           <NavLink to="/timeline">Timeline</NavLink>
           <NavLink to="/socials">socials</NavLink>
           <NavLink to="/skills">Compétences</NavLink>
+          <NavLink to="/briefs">Briefs</NavLink>
         </nav>
 
         {/* ── Contenu central ───────────────────────── */}

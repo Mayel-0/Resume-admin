@@ -13,6 +13,7 @@ import AdminSections from "./pages/AdminSections";
 import AdminTimeline from "./pages/AdminTimeline";
 import AdminSocials from "./pages/AdminSocials";
 import AdminSkills from "./pages/AdminSkills";
+import AdminBriefs from "./pages/AdminBriefs";
 
 
 function App() {
@@ -97,6 +98,17 @@ function App() {
               <ProtectedRoute>
                 <AdminLayout>
                   <AdminSkills />
+                </AdminLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/briefs"
+            element={
+              <ProtectedRoute>
+                <AdminLayout>
+                  <AdminBriefs />
                 </AdminLayout>
               </ProtectedRoute>
             }
