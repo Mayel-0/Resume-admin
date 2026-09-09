@@ -11,22 +11,24 @@ function Login() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-
+  // Étape 1 : Envoi direct de l'email + mot de passe
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
+      // 1. On envoie l'email et le MDP pour vérification backend
       const res = await login(email, password);
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error ?? "Erreur de connexion");
+        // En cas d'erreur de connexion/identifiants
+        setError(data.error ?? "Email ou mot de passe incorrect");
         return;
       }
 
-
+      // 2. Si c'est OK, le backend a envoyé le mail OTP, on passe à l'étape "otp"
       setStep("otp");
     } catch (err) {
       setError("Impossible de joindre le serveur");
@@ -35,7 +37,7 @@ function Login() {
     }
   };
 
-  // Étape 2 : Verification du code OTP
+  // Étape 2 : Vérification du code OTP reçu par e-mail
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -50,6 +52,7 @@ function Login() {
         return;
       }
 
+      // Connexion validée
       setStep("login");
       navigate("/");
     } catch (err) {
@@ -67,6 +70,7 @@ function Login() {
         {error && <p className="login__error">{error}</p>}
 
         {step === "login" ? (
+          /* --- Formulaire Initial : Email + MDP --- */
           <form className="login__form" onSubmit={handleLoginSubmit}>
             <label htmlFor="email">Email</label>
             <input
@@ -93,9 +97,10 @@ function Login() {
             </button>
           </form>
         ) : (
+          /* --- Formulaire Secondaire : Saisie du code OTP --- */
           <form className="login__form" onSubmit={handleOtpSubmit}>
             <p className="login__info">
-              Un code de vérification a été envoyé à <strong>{email}</strong>.
+              Un code OTP a été envoyé à <strong>{email}</strong>.
             </p>
 
             <label htmlFor="otp">Code OTP</label>
@@ -123,7 +128,7 @@ function Login() {
                 setError(null);
               }}
             >
-              Retour à la connexion
+              Retour
             </button>
           </form>
         )}

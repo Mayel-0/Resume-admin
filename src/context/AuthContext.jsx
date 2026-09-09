@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const [step, setStep] = useState("login");
+  const [step, setStep] = useState("login"); // "login" | "otp"
   const [email, setEmail] = useState("");
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    const res = await fetch(`${BASE_AUTH}/login`, {
+    const res = await fetch(`${BASE}/auth/login`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -32,17 +32,16 @@ export function AuthProvider({ children }) {
     return res;
   };
 
-
   const verifyOtp = async (email, code) => {
-  const res = await fetch(`${BASE_AUTH}/verify-otp`, {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, code }),
-  });
-  if (res.ok) setIsAuthenticated(true);
-  return res;
-};
+    const res = await fetch(`${BASE}/auth/verify-otp`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, code }),
+    });
+    if (res.ok) setIsAuthenticated(true);
+    return res;
+  };
 
   const logout = async () => {
     await fetch(`${BASE}/auth/logout`, {
@@ -50,10 +49,23 @@ export function AuthProvider({ children }) {
       credentials: "include",
     });
     setIsAuthenticated(false);
+    setStep("login");
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, loading }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        login,
+        verifyOtp,
+        logout,
+        loading,
+        step,
+        setStep,
+        email,
+        setEmail,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
