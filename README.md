@@ -17,85 +17,115 @@ Ce dépôt est la **partie administration** d'un projet découpé en trois repos
 Client
   │
   ▼
-Cloudflare  ◄─── CDN, DDoS protection, SSL, masquage IP
+Cloudflare  ◄─── CDN, protection DDoS, SSL, masquage IP
   │
   ▼
 Oracle Cloud (Ubuntu)
   │
-  Nginx ─── Reverse Proxy
-  │         ├── mael-llado.com        → Frontend (dist Vite statique)
-  │         ├── mael-llado.com/api    → Backend Node.js
-  │         └── admin.mael-llado.com  → Panel Admin  ◄── ce repo
+  Nginx ─── Reverse proxy vers les conteneurs Docker
+  │         ├── mael-llado.com        → conteneur front  (build Vite servi par Nginx)
+  │         ├── mael-llado.com/api    → conteneur back   (Node.js)
+  │         └── admin.mael-llado.com  → conteneur admin  (build Vite servi par Nginx)  ◄── ce repo
   │
-  └── PostgreSQL  ◄─── Toutes les données (textes, projets, images, documents)
+  └── conteneur db ─── PostgreSQL 17, données dans un volume Docker
 ```
 
 > Le client ne communique jamais directement avec le serveur Oracle.
-> Cloudflare intercepte chaque requête et la relaie, ce qui masque l'IP réelle du serveur
-> (un `ping mael-llado.com` renvoie une IP Cloudflare, pas l'IP Oracle).
+> Cloudflare intercepte chaque requête et la relaie, ce qui masque l'IP réelle du serveur.
 
 ---
 
-## Admin — Resume-Admin
+## Présentation
 
-### Présentation
+Interface **React 19** privée, écrite en **TypeScript** (mode `strict`), qui permet de modifier tout le contenu affiché sur le portfolio public : profil, sections, parcours, compétences, projets, liens de contact.
 
-Interface React privée permettant de gérer l'intégralité du contenu affiché sur le portfolio public. Elle communique exclusivement avec les **routes admin de l'API** (`POST`, `PATCH`, `DELETE`) protégées par authentification **JWT**.
+Chaque champ se modifie directement en cliquant dessus. L'accès passe par une connexion en deux étapes ; sans session valide, toutes les pages redirigent vers `/login`.
 
-L'accès est sécurisé par une page de connexion : sans token valide, toutes les routes admin sont bloquées par un `ProtectedRoute`.
+| Route       | Contenu géré                                        |
+| ----------- | --------------------------------------------------- |
+| `/login`    | Connexion (mot de passe, puis code reçu par e-mail) |
+| `/profil`   | Présentation du hero                                |
+| `/sections` | Blocs de texte libres                               |
+| `/projects` | Projets, leurs étiquettes et leur stack technique   |
+| `/timeline` | Étapes du parcours                                  |
+| `/socials`  | Liens de contact                                    |
+| `/skills`   | Catégories et compétences                           |
+| `/briefs`   | Bloc « En bref »                                    |
 
 ---
 
 ## Stack technique
 
-| Catégorie    | Technologie            | Version |
-| ------------ | ---------------------- | ------- |
-| Framework UI | React                  | 19      |
-| Bundler      | Vite                   | 8       |
-| Routing      | React Router DOM       | 7       |
-| Animations   | GSAP + `@gsap/react`   | 3.15    |
-| Icônes       | Lucide React           | 1.39    |
-| CSS          | Sass (SCSS)            | 1.103   |
-| Linting      | ESLint + plugins React | 10      |
-
-> Stack identique au frontend public, à l'exception de **Lenis** (scroll smooth) qui n'est pas inclus ici — l'admin privilégie la fonctionnalité à l'expérience animée.
+| Catégorie        | Technologie                 | Version |
+| ---------------- | --------------------------- | ------- |
+| Langage          | TypeScript (strict)         | 6       |
+| Framework UI     | React                       | 19      |
+| Bundler          | Vite                        | 8       |
+| Routing          | React Router DOM            | 7       |
+| CSS              | Sass (SCSS)                 | 1.103   |
+| Linting          | ESLint + typescript-eslint  | 10      |
+| Conteneurisation | Docker (build Vite → Nginx) | —       |
 
 ---
 
 ## Architecture du projet
 
 ```
-Resume-Admin/
-├── public/                  # Assets statiques (favicon, etc.)
+Resume-admin/
+├── public/                     # Fichiers statiques (favicon)
 ├── src/
-│   ├── main.jsx             # Point d'entrée React + Router
+│   ├── main.tsx                # Point d'entrée React
+│   ├── App.tsx                 # Routes, toutes protégées sauf /login
 │   ├── context/
-│   │   └── AuthContext.jsx  # Contexte global — état d'authentification JWT
-│   ├── components/
-│   │   └── ProtectedRoute.jsx  # Guard de route — redirige si non authentifié
+│   │   ├── authContext.ts      # Type du contexte + hook useAuth
+│   │   └── AuthProvider.tsx    # État de la session, connexion, déconnexion
 │   ├── hooks/
-│   │   └── useApi.js        # Hook centralisé pour les appels API avec le token JWT
-│   ├── pages/               # Pages admin — une par ressource gérée
-│   └── components/          # Composants UI par section (formulaires, tableaux, etc.)
-├── .env                     # Variables d'environnement (développement)
-├── .env.production          # Variables d'environnement (production)
-├── vite.config.js
-├── eslint.config.js
-└── index.html
+│   │   ├── useApi.ts           # Client HTTP typé (get, post, patch, del)
+│   │   └── useResource.ts      # Charge une ressource et permet de la recharger
+│   ├── components/
+│   │   ├── ProtectedRoute.tsx  # Redirige vers /login sans session
+│   │   ├── AdminLayout.tsx     # En-tête + menu latéral
+│   │   ├── Login.tsx           # Formulaire en deux étapes
+│   │   ├── EditableField.tsx   # Champ modifiable en ligne
+│   │   ├── CreateField.tsx     # Formulaire de création
+│   │   └── DeleteField.tsx     # Bouton de suppression avec confirmation
+│   ├── pages/                  # Une page par ressource
+│   ├── models/                 # Types des données et des routes de l'API
+│   ├── lib/                    # Petites fonctions (slugify, tri, erreurs)
+│   └── styles/                 # SCSS : abstracts/, base/, components/, pages/
+├── nginx.conf                  # Configuration du Nginx embarqué dans l'image Docker
+├── Dockerfile
+├── tsconfig.json
+└── vite.config.ts
 ```
 
-### Logique parent → enfant
+### Trois composants pour tout gérer
 
-Identique au frontend public : chaque **page** orchestre les appels API via les hooks, gère l'état de chargement, et transmet les données en **props** aux composants enfants (formulaires, listes, sections). Aucun composant enfant ne fait d'appel réseau directement.
+Toutes les pages sont construites avec les mêmes briques :
 
+```tsx
+const { data: projects, loading, error, reload } = useResource("/projects");
+
+<CreateField route="/projects" currentOrder={maxOrder} onSuccess={reload} withSlug>
+  <input name="title" type="text" />
+</CreateField>
+
+<EditableField item={project} fieldKey="title" route={`/projects/${project.id}`} />
+
+<DeleteButton route={`/projects/${project.id}`} onSuccess={reload} />
 ```
-Page admin (ex: ProjectsAdminPage)
-  ├── appelle useApi() → requêtes POST / PATCH / DELETE vers l'API
-  ├── PageLoader (gère loading / error)
-  └── transmet les données en props
-        ├── <ProjectsList data={projects} onDelete={handleDelete} />
-        ├── <ProjectForm onSubmit={handleCreate} />
-        └── <ProjectEditForm data={selected} onSubmit={handleUpdate} />
+
+### Ce que TypeScript vérifie
+
+Les modèles de `src/models/` décrivent les données et les routes de l'API. Les erreurs courantes sont attrapées à la compilation :
+
+```tsx
+useResource("/projects"); //       → data: Project[] | null
+useResource("/projets"); //        ✗ la route n'existe pas
+
+<EditableField item={project} fieldKey="title" />; //  ✓
+<EditableField item={project} fieldKey="titel" />; //  ✗ ce champ n'existe pas sur Project
+<EditableField item={project} fieldKey="order" />; //  ✗ ce n'est pas un champ texte
 ```
 
 ---
@@ -105,167 +135,126 @@ Page admin (ex: ProjectsAdminPage)
 ### Flux de connexion
 
 ```
-Page Login
-  │  saisie identifiants
+Page /login
+  │  e-mail + mot de passe
   ▼
-POST /api/admin/login
-  │  → renvoie un token JWT signé
+POST /api/auth/login
+  │  → l'API envoie un code à 6 chiffres par e-mail
   ▼
-AuthContext
-  │  stocke le token dans l'état global
+Saisie du code
+  │
+POST /api/auth/verify-otp
+  │  → l'API pose un cookie de session HttpOnly
   ▼
-useApi (hook)
-  │  injecte automatiquement le token dans chaque requête
-  │  Authorization: Bearer <token>
-  ▼
-Routes protégées de l'API (POST / PATCH / DELETE)
+Requêtes vers /api/admin/*
+     le navigateur joint le cookie (credentials: "include")
 ```
 
-### ProtectedRoute
+Le jeton de session n'est **jamais manipulé par le JavaScript** de l'interface : il vit dans un cookie `HttpOnly` posé par l'API. Le front ne stocke rien dans `localStorage` et n'envoie aucun header `Authorization`.
 
-Toutes les pages admin sont encapsulées dans un composant `ProtectedRoute` :
+### Vérification de la session
 
-```jsx
-// Si aucun token valide → redirection automatique vers /login
-<ProtectedRoute>
-  <ProjectsAdminPage />
-</ProtectedRoute>
+- Au chargement, `AuthProvider` appelle `GET /api/auth/me` pour savoir si le cookie est encore valide.
+- `ProtectedRoute` redirige vers `/login` si ce n'est pas le cas.
+- Si une requête reçoit une réponse `401` (session expirée en cours d'utilisation), `useApi` déconnecte et renvoie à la page de connexion.
+
+### Validation
+
+Les données envoyées sont validées par l'API. En cas d'erreur, le message renvoyé s'affiche sous le champ concerné :
+
 ```
-
-### Hook `useApi`
-
-Centralise tous les appels HTTP vers l'API en injectant automatiquement le header `Authorization` :
-
-```js
-const { data, loading, error } = useApi("/admin/projects");
-// → GET https://mael-llado.com/api/admin/projects
-//   avec Authorization: Bearer <token>
+Données invalides — visibility : Option invalide : une valeur parmi "Public"|"Privé" attendue
 ```
 
 ---
 
 ## Routes API consommées
 
-Le panel admin utilise exclusivement les **routes protégées** de l'API backend :
+| Méthode  | Route                       | Action                                  |
+| -------- | --------------------------- | --------------------------------------- |
+| `POST`   | `/api/auth/login`           | Vérifie les identifiants, envoie le code |
+| `POST`   | `/api/auth/verify-otp`      | Vérifie le code, ouvre la session       |
+| `POST`   | `/api/auth/logout`          | Ferme la session                        |
+| `GET`    | `/api/auth/me`              | Vérifie la session                      |
+| `GET`    | `/api/admin/:ressource`     | Lister                                  |
+| `POST`   | `/api/admin/:ressource`     | Créer                                   |
+| `PATCH`  | `/api/admin/:ressource/:id` | Modifier                                |
+| `DELETE` | `/api/admin/:ressource/:id` | Supprimer                               |
 
-| Méthode  | Route                       | Action                                       |
-| -------- | --------------------------- | -------------------------------------------- |
-| `POST`   | `/api/admin/login`          | Authentification — récupération du token JWT |
-| `POST`   | `/api/admin/:ressource`     | Créer un élément (projet, compétence, etc.)  |
-| `PATCH`  | `/api/admin/:ressource/:id` | Modifier un élément existant                 |
-| `DELETE` | `/api/admin/:ressource/:id` | Supprimer un élément                         |
-
-> Les routes `GET` publiques (`/api/projets`, `/api/skills`, etc.) sont également consommées
-> pour afficher les données existantes avant modification.
+Ressources : `profil`, `sections`, `timeline`, `briefs`, `socials`, `skill-categories`, `skill-items`, `projects`, `project-tags`, `project-tech-stack`.
 
 ---
 
 ## Styles & conventions CSS
 
-Méthodologie **BEM** (Block Element Modifier) appliquée sur l'ensemble des fichiers SCSS.
-
-```scss
-/* Exemple de nommage BEM */
-.admin-form {
-} /* Block */
-.admin-form__field {
-} /* Element */
-.admin-form__field--error {
-} /* Modifier */
-```
-
-Organisation des fichiers — un fichier SCSS dédié par page et par composant :
+Méthodologie **BEM** sur l'ensemble des fichiers SCSS, sans framework CSS externe.
 
 ```
-src/
-├── pages/
-│   ├── LoginPage.scss
-│   ├── DashboardPage.scss
-│   └── ProjectsAdminPage.scss
-└── components/
-    ├── ProjectForm.scss
-    ├── ProjectsList.scss
-    └── ProtectedRoute.scss
+src/styles/
+├── main.scss            # Point d'entrée, importe tout le reste
+├── abstracts/           # Variables
+├── base/                # Reset, utilitaires
+├── components/          # Layout, formulaires, champ modifiable, connexion
+└── pages/               # Pages d'administration
 ```
-
-Compilé via le plugin **Sass** de Vite, sans aucun framework CSS externe.
 
 ---
 
 ## Variables d'environnement
 
-Créer un fichier `.env` à la racine avant de lancer le projet :
+Créer un fichier `.env` à la racine :
 
 ```dotenv
-VITE_API_URL=https://mael-llado.com/api
+VITE_API_URL=https://mael-llado.com
 ```
 
-| Variable       | Description                  |
-| -------------- | ---------------------------- |
-| `VITE_API_URL` | URL de base de l'API backend |
+| Variable       | Description                                             |
+| -------------- | ------------------------------------------------------- |
+| `VITE_API_URL` | URL de base du back, **sans** `/api` (le code l'ajoute) |
 
-> En production, le fichier `.env.production` est utilisé automatiquement par Vite lors du `build`.
-> Ne jamais committer ces fichiers — ils sont dans le `.gitignore`.
+> La valeur est figée dans le bundle au moment du build.
 
 ---
 
 ## Installation & développement
 
 ```bash
-# Cloner le repo
 git clone https://github.com/Mayel-0/Resume-admin.git
 cd Resume-admin
-
-# Installer les dépendances
 npm install
 
-# Créer le fichier d'environnement
-cp .env.example .env
-# puis renseigner VITE_API_URL
-
-# Lancer le serveur de développement
+# Créer le fichier .env (voir ci-dessus), puis :
 npm run dev
 ```
 
-> Le backend (Resume-Back) doit être lancé en parallèle pour que les appels API fonctionnent.
+Le serveur de développement écoute sur le port `5174`.
+
+> Le cookie de session est limité au domaine `.mael-llado.com` : la connexion complète ne fonctionne donc que sur le site en ligne. En local, l'interface se lance mais reste sur la page de connexion.
 
 ## Scripts disponibles
 
-| Commande          | Description                             |
-| ----------------- | --------------------------------------- |
-| `npm run dev`     | Serveur de développement Vite avec HMR  |
-| `npm run build`   | Build de production → dossier `dist/`   |
-| `npm run preview` | Prévisualisation du build de production |
-| `npm run lint`    | Analyse statique ESLint                 |
+| Commande            | Description                                  |
+| ------------------- | -------------------------------------------- |
+| `npm run dev`       | Serveur de développement Vite avec HMR       |
+| `npm run build`     | Vérification des types, puis build → `dist/` |
+| `npm run typecheck` | Vérification des types seule                 |
+| `npm run lint`      | Analyse statique ESLint                      |
+| `npm run preview`   | Prévisualisation du build de production      |
 
 ---
 
 ## Déploiement
 
-Le build de production est généré avec Vite et servi **statiquement** par Nginx sur la machine Oracle Cloud, sur le sous-domaine `admin.mael-llado.com`.
+Le panneau est livré dans une **image Docker** construite en deux étapes : build Vite, puis Nginx qui sert le dossier `dist/`.
 
 ```bash
-npm run build
-# → génère dist/
-
-# Copier dist/ vers le répertoire servi par Nginx
-# ex: /var/www/admin.mael-llado.com/html/
+docker build -t resume-admin .
+docker run -d -p 127.0.0.1:8081:80 resume-admin
 ```
 
-Nginx est configuré pour servir `dist/index.html` sur toutes les routes (SPA fallback) :
+Le Nginx embarqué (`nginx.conf`) renvoie `index.html` pour toutes les routes, afin que React Router gère `/login`, `/projects`, etc.
 
-```nginx
-server {
-    server_name admin.mael-llado.com;
-
-    root /var/www/admin.mael-llado.com/html;
-    index index.html;
-
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-}
-```
+En production, un `docker-compose.yml` lance ce conteneur avec l'API, le site public et la base de données. Le Nginx du serveur relaie `admin.mael-llado.com` vers lui, et `/api` vers le conteneur de l'API.
 
 ---
 
