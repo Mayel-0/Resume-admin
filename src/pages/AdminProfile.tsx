@@ -1,19 +1,8 @@
-import { useEffect, useState } from "react";
-import { useApi } from "../hooks/useApi";
+import { useResource } from "../hooks/useResource";
 import { EditableField } from "../components/EditableField";
 
 export default function AdminProfile() {
-  const { get } = useApi();
-  const [profil, setProfil] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    get("/profil")
-      .then(setProfil)
-      .catch(setError)
-      .finally(() => setLoading(false));
-  }, []);
+  const { data: profil, loading, error } = useResource("/profil");
 
   if (loading) return <p>Chargement…</p>;
   if (error)   return <p>Erreur : {error.message}</p>;
@@ -26,7 +15,7 @@ export default function AdminProfile() {
       <div className="admin-profile__field">
         <label>Prénom</label>
         <EditableField
-          value={profil.firstName}
+          item={profil}
           route="/profil"
           fieldKey="firstName"
         />
@@ -35,7 +24,7 @@ export default function AdminProfile() {
       <div className="admin-profile__field">
         <label>Nom</label>
         <EditableField
-          value={profil.lastName}
+          item={profil}
           route="/profil"
           fieldKey="lastName"
         />
@@ -44,7 +33,7 @@ export default function AdminProfile() {
       <div className="admin-profile__field">
         <label>Rôle</label>
         <EditableField
-          value={profil.role}
+          item={profil}
           route="/profil"
           fieldKey="role"
         />
@@ -53,7 +42,7 @@ export default function AdminProfile() {
       <div className="admin-profile__field">
         <label>Localisation</label>
         <EditableField
-          value={profil.location}
+          item={profil}
           route="/profil"
           fieldKey="location"
         />
@@ -62,7 +51,7 @@ export default function AdminProfile() {
       <div className="admin-profile__field">
         <label>Tagline</label>
         <EditableField
-          value={profil.tagline}
+          item={profil}
           route="/profil"
           fieldKey="tagline"
           type="html"

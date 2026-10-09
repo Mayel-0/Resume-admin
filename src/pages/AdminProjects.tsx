@@ -1,55 +1,29 @@
-import { useEffect, useState } from "react";
-import { useApi } from "../hooks/useApi";
+import { useResource } from "../hooks/useResource";
+import { highestOrder } from "../lib/order";
 import { EditableField } from "../components/EditableField";
 import { CreateField } from "../components/CreateField";
 import { DeleteButton } from "../components/DeleteField";
 
 export default function AdminProjects() {
-  const {get} = useApi();
-  const [projects, setProject] = useState(null);
-  const [projectTags, setProjectTags] = useState(null);
-  const [projectStack, setProjectStack] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const projectsResource = useResource("/projects");
+  const tagsResource = useResource("/project-tags");
+  const stackResource = useResource("/project-tech-stack");
+  const projects = projectsResource.data;
+  const projectTags = tagsResource.data;
+  const projectStack = stackResource.data;
+  const error = projectsResource.error ?? tagsResource.error ?? stackResource.error;
 
-  useEffect(() => {
-    Promise.all([
-      get("/projects"),
-      get("/project-tags"),
-      get("/project-tech-stack"),
-    ])
-      .then(([projectsData, tagsData, stackData]) => {
-        setProject(projectsData);
-        setProjectTags(tagsData);
-        setProjectStack(stackData);
-      })
-      .catch(setError)
-      .finally(() => setLoading(false));
-  }, [])
+  const loadProjects = () => {
+    projectsResource.reload();
+    tagsResource.reload();
+    stackResource.reload();
+  };
 
-  if (loading) return <p>Chargement…</p>;
+  if (projectsResource.loading || tagsResource.loading || stackResource.loading) return <p>Chargement…</p>;
   if (error)   return <p>Erreur : {error.message}</p>;
   if (!projects || !projectTags || !projectStack) return <p>Aucun project trouvé.</p>;
 
-  const loadProjects = () => {
-  setLoading(true);
-  Promise.all([
-    get("/projects"),
-    get("/project-tags"),
-    get("/project-tech-stack"),
-  ])
-    .then(([projectsData, tagsData, stackData]) => {
-      setProject(projectsData);
-      setProjectTags(tagsData);
-      setProjectStack(stackData);
-    })
-    .catch(setError)
-    .finally(() => setLoading(false));
-};
-
-  const maxOrder = projects.length > 0
-  ? Math.max(...projects.map((p) => Number(p.order) || 0))
-  : 0;
+  const maxOrder = highestOrder(projects);
 
   return (
     <section className="admin-project">
@@ -90,7 +64,7 @@ export default function AdminProjects() {
             <div className="admin-project__field">
               <label>Titre</label>
               <EditableField
-                value={project.title}
+                item={project}
                 route={`/projects/${project.id}`}
                 fieldKey="title"
               />
@@ -98,7 +72,7 @@ export default function AdminProjects() {
             <div className="admin-project__field">
               <label>imageUrl</label>
               <EditableField
-                value={project.imageUrl}
+                item={project}
                 route={`/projects/${project.id}`}
                 fieldKey="imageUrl"
               />
@@ -106,7 +80,7 @@ export default function AdminProjects() {
             <div className="admin-project__field">
               <label>year</label>
               <EditableField
-                value={project.year}
+                item={project}
                 route={`/projects/${project.id}`}
                 fieldKey="year"
               />
@@ -114,7 +88,7 @@ export default function AdminProjects() {
             <div className="admin-project__field">
               <label>visibility: Privé , Public</label>
               <EditableField
-                value={project.visibility}
+                item={project}
                 route={`/projects/${project.id}`}
                 fieldKey="visibility"
               />
@@ -122,7 +96,7 @@ export default function AdminProjects() {
             <div className="admin-project__field">
               <label>Intro</label>
               <EditableField
-                value={project.intro}
+                item={project}
                 route={`/projects/${project.id}`}
                 fieldKey="intro"
               />
@@ -130,7 +104,7 @@ export default function AdminProjects() {
             <div className="admin-project__field">
               <label>contextTitle</label>
               <EditableField
-                value={project.contextTitle}
+                item={project}
                 route={`/projects/${project.id}`}
                 fieldKey="contextTitle"
               />
@@ -138,7 +112,7 @@ export default function AdminProjects() {
             <div className="admin-project__field">
               <label>context</label>
               <EditableField
-                value={project.context}
+                item={project}
                 route={`/projects/${project.id}`}
                 fieldKey="context"
               />
@@ -146,7 +120,7 @@ export default function AdminProjects() {
             <div className="admin-project__field">
               <label>readme</label>
               <EditableField
-                value={project.readme}
+                item={project}
                 route={`/projects/${project.id}`}
                 fieldKey="readme"
               />
@@ -154,7 +128,7 @@ export default function AdminProjects() {
             <div className="admin-project__field">
               <label>note</label>
               <EditableField
-                value={project.note}
+                item={project}
                 route={`/projects/${project.id}`}
                 fieldKey="note"
               />
@@ -162,7 +136,7 @@ export default function AdminProjects() {
             <div className="admin-project__field">
               <label>githubUrl</label>
               <EditableField
-                value={project.githubUrl}
+                item={project}
                 route={`/projects/${project.id}`}
                 fieldKey="githubUrl"
               />
@@ -170,7 +144,7 @@ export default function AdminProjects() {
             <div className="admin-project__field">
               <label>liveUrl</label>
               <EditableField
-                value={project.liveUrl}
+                item={project}
                 route={`/projects/${project.id}`}
                 fieldKey="liveUrl"
               />
@@ -178,7 +152,7 @@ export default function AdminProjects() {
             <div className="admin-project__field">
               <label>linkLabel</label>
               <EditableField
-                value={project.linkLabel}
+                item={project}
                 route={`/projects/${project.id}`}
                 fieldKey="linkLabel"
               />
@@ -203,7 +177,7 @@ export default function AdminProjects() {
                     .map((tag) => (
                       <div className="admin-project__relation-item" key={tag.id}>
                         <EditableField
-                          value={tag.tag}
+                          item={tag}
                           route={`/project-tags/${tag.id}`}
                           fieldKey="tag"
                         />
@@ -241,7 +215,7 @@ export default function AdminProjects() {
                         <div className="admin-project__relation-field">
                           <label>Nom</label>
                           <EditableField
-                            value={stack.label}
+                            item={stack}
                             route={`/project-tech-stack/${stack.id}`}
                             fieldKey="label"
                           />
@@ -249,7 +223,7 @@ export default function AdminProjects() {
                         <div className="admin-project__relation-field">
                           <label>Type</label>
                           <EditableField
-                            value={stack.type}
+                            item={stack}
                             route={`/project-tech-stack/${stack.id}`}
                             fieldKey="type"
                           />

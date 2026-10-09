@@ -1,6 +1,15 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/authContext";
+
+/** Message d'erreur renvoyé par le back, s'il y en a un. */
+async function readError(res: Response): Promise<string | null> {
+  const data: unknown = await res.json().catch(() => null);
+  if (typeof data === "object" && data !== null && "error" in data && typeof data.error === "string") {
+    return data.error;
+  }
+  return null;
+}
 
 function Login() {
   const { login, verifyOtp, step, setStep, email, setEmail } = useAuth();
@@ -8,11 +17,11 @@ function Login() {
 
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   // Étape 1 : Envoi direct de l'email + mot de passe
-  const handleLoginSubmit = async (e) => {
+  const handleLoginSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
@@ -20,17 +29,16 @@ function Login() {
     try {
       // 1. On envoie l'email et le MDP pour vérification backend
       const res = await login(email, password);
-      const data = await res.json();
 
       if (!res.ok) {
         // En cas d'erreur de connexion/identifiants
-        setError(data.error ?? "Email ou mot de passe incorrect");
+        setError((await readError(res)) ?? "Email ou mot de passe incorrect");
         return;
       }
 
       // 2. Si c'est OK, le backend a envoyé le mail OTP, on passe à l'étape "otp"
       setStep("otp");
-    } catch (err) {
+    } catch {
       setError("Impossible de joindre le serveur");
     } finally {
       setLoading(false);
@@ -38,24 +46,23 @@ function Login() {
   };
 
   // Étape 2 : Vérification du code OTP reçu par e-mail
-  const handleOtpSubmit = async (e) => {
+  const handleOtpSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
       const res = await verifyOtp(email, code);
-      const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error ?? "Code OTP invalide");
+        setError((await readError(res)) ?? "Code OTP invalide");
         return;
       }
 
       // Connexion validée
       setStep("login");
       navigate("/");
-    } catch (err) {
+    } catch {
       setError("Impossible de joindre le serveur");
     } finally {
       setLoading(false);

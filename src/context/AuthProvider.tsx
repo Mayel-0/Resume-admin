@@ -1,14 +1,13 @@
-import { createContext, useContext, useState, useEffect } from "react";
-
-const AuthContext = createContext(null);
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { AuthContext, type AuthContextValue, type LoginStep } from "./authContext";
 
 const BASE = import.meta.env.VITE_API_URL + "/api";
 
-export function AuthProvider({ children }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const [step, setStep] = useState("login"); // "login" | "otp"
+  const [step, setStep] = useState<LoginStep>("login");
   const [email, setEmail] = useState("");
 
   useEffect(() => {
@@ -22,7 +21,7 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
 
-  const login = async (email, password) => {
+  const login = useCallback(async (email: string, password: string) => {
     const res = await fetch(`${BASE}/auth/login`, {
       method: "POST",
       credentials: "include",
@@ -30,9 +29,9 @@ export function AuthProvider({ children }) {
       body: JSON.stringify({ email, password }),
     });
     return res;
-  };
+  }, []);
 
-  const verifyOtp = async (email, code) => {
+  const verifyOtp = useCallback(async (email: string, code: string) => {
     const res = await fetch(`${BASE}/auth/verify-otp`, {
       method: "POST",
       credentials: "include",
@@ -41,34 +40,21 @@ export function AuthProvider({ children }) {
     });
     if (res.ok) setIsAuthenticated(true);
     return res;
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     await fetch(`${BASE}/auth/logout`, {
       method: "POST",
       credentials: "include",
     });
     setIsAuthenticated(false);
     setStep("login");
-  };
+  }, []);
 
-  return (
-    <AuthContext.Provider
-      value={{
-        isAuthenticated,
-        login,
-        verifyOtp,
-        logout,
-        loading,
-        step,
-        setStep,
-        email,
-        setEmail,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo<AuthContextValue>(
+    () => ({ isAuthenticated, login, verifyOtp, logout, loading, step, setStep, email, setEmail }),
+    [isAuthenticated, login, verifyOtp, logout, loading, step, email],
   );
-}
 
-export const useAuth = () => useContext(AuthContext);
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}

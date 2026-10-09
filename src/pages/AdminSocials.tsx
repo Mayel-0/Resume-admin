@@ -1,38 +1,17 @@
-import { useEffect, useState } from "react";
-import { useApi } from "../hooks/useApi";
+import { useResource } from "../hooks/useResource";
+import { highestOrder } from "../lib/order";
 import { EditableField } from "../components/EditableField";
 import { CreateField } from "../components/CreateField";
 import { DeleteButton } from "../components/DeleteField";
 
 export default function AdminSocials() {
-  const {get} = useApi();
-  const [socials, setSocials] = useState(null)
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    get("/socials")
-      .then(setSocials)
-      .catch(setError)
-      .finally(() => setLoading(false));
-  }, [])
+  const { data: socials, loading, error, reload: loadSocials } = useResource("/socials");
 
   if (loading) return <p>Chargement…</p>;
   if (error)   return <p>Erreur : {error.message}</p>;
   if (!socials) return <p>Aucun socials trouvé.</p>;
 
-
-  const loadSocials = () => {
-    setLoading(true);
-    get("/socials")
-      .then(setSocials)
-      .catch(setError)
-      .finally(() => setLoading(false));
-  };
-
-  const maxOrder = socials.length > 0
-  ? Math.max(...socials.map((p) => Number(p.order) || 0))
-  : 0;
+  const maxOrder = highestOrder(socials);
 
   return (
     <section className="admin-socials">
@@ -59,40 +38,40 @@ export default function AdminSocials() {
         </div>
         <div className="admin-socials__list">
           {socials.map((social) => (
-            <article key={social.order} className="admin-socials__card">
+            <article key={social.id} className="admin-socials__card">
               <label>label</label>
               <EditableField
-                value={social.label}
+                item={social}
                 route={`/socials/${social.id}`}
                 fieldKey="label"
               />
               <label>handle</label>
               <EditableField
-                value={social.handle}
+                item={social}
                 route={`/socials/${social.id}`}
                 fieldKey="handle"
               />
               <label>href</label>
               <EditableField
-                value={social.href}
+                item={social}
                 route={`/socials/${social.id}`}
                 fieldKey="href"
               />
               <label>icon</label>
               <EditableField
-                value={social.icon}
+                item={social}
                 route={`/socials/${social.id}`}
                 fieldKey="icon"
               />
               <label>path</label>
               <EditableField
-                value={social.path}
+                item={social}
                 route={`/socials/${social.id}`}
                 fieldKey="path"
               />
               <label>viewbox</label>
               <EditableField
-                value={social.viewbox}
+                item={social}
                 route={`/socials/${social.id}`}
                 fieldKey="viewbox"
               />

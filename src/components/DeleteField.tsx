@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { useApi } from "../hooks/useApi";
+import type { ItemRoute } from "../models";
 
-export function DeleteButton({ route, onSuccess }) {
+interface DeleteButtonProps {
+  /** Route de l'élément à supprimer, ex. "/projects/12" */
+  route: ItemRoute;
+  onSuccess?: () => void;
+}
+
+export function DeleteButton({ route, onSuccess }: DeleteButtonProps) {
   const [confirm, setConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const { del } = useApi();
@@ -10,7 +17,7 @@ export function DeleteButton({ route, onSuccess }) {
     setLoading(true);
     try {
       await del(route);
-      if (onSuccess) onSuccess();
+      onSuccess?.();
     } catch (err) {
       console.error(err);
     } finally {

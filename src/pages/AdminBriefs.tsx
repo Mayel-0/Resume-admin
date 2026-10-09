@@ -1,34 +1,17 @@
-import { useEffect, useState } from "react";
-import { useApi } from "../hooks/useApi";
+import { useResource } from "../hooks/useResource";
+import { highestOrder } from "../lib/order";
 import { EditableField } from "../components/EditableField";
 import { CreateField } from "../components/CreateField";
 import { DeleteButton } from "../components/DeleteField";
 
 export default function AdminBriefs() {
-  const { get } = useApi();
-  const [briefs, setBriefs] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const loadBriefs = () => {
-    setLoading(true);
-    get("/briefs")
-      .then(setBriefs)
-      .catch(setError)
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    loadBriefs();
-  }, []);
+  const { data: briefs, loading, error, reload: loadBriefs } = useResource("/briefs");
 
   if (loading) return <p>Chargement…</p>;
   if (error) return <p>Erreur : {error.message}</p>;
   if (!briefs) return <p>Aucun brief trouvé.</p>;
 
-  const maxOrder = briefs.length > 0
-    ? Math.max(...briefs.map((brief) => Number(brief.order) || 0))
-    : 0;
+  const maxOrder = highestOrder(briefs);
 
   return (
     <section className="admin-briefs">
@@ -53,7 +36,7 @@ export default function AdminBriefs() {
               <div className="admin-briefs__field">
                 <label>Titre</label>
                 <EditableField
-                  value={brief.title}
+                  item={brief}
                   route={`/briefs/${brief.id}`}
                   fieldKey="title"
                 />
@@ -61,7 +44,7 @@ export default function AdminBriefs() {
               <div className="admin-briefs__field">
                 <label>Sous-titre</label>
                 <EditableField
-                  value={brief.subtitle}
+                  item={brief}
                   route={`/briefs/${brief.id}`}
                   fieldKey="subtitle"
                 />

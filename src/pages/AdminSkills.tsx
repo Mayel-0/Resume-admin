@@ -1,48 +1,28 @@
-import { useEffect, useState } from "react";
-import { useApi } from "../hooks/useApi";
+import { useResource } from "../hooks/useResource";
+import { highestOrder } from "../lib/order";
 import { EditableField } from "../components/EditableField";
 import { CreateField } from "../components/CreateField";
 import { DeleteButton } from "../components/DeleteField";
 
 
 export default function AdminSkills() {
-  const {get} = useApi();
-  const [skillCategories, setSkillCategories] = useState(null);
-  const [skillsItems, setSkillsItems] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const categories = useResource("/skill-categories");
+  const items = useResource("/skill-items");
+  const skillCategories = categories.data;
+  const skillsItems = items.data;
+  const error = categories.error ?? items.error;
 
-  useEffect(() => {
-    Promise.all([get("/skill-categories"), get("/skill-items")])
-      .then(([categories, items]) => {
-        setSkillCategories(categories);
-        setSkillsItems(items);
-      })
-      .catch(setError)
-      .finally(() => setLoading(false));
-  }, [])
+  const loadSkills = () => {
+    categories.reload();
+    items.reload();
+  };
 
-  if (loading) return <p>Chargement…</p>;
+  if (categories.loading || items.loading) return <p>Chargement…</p>;
   if (error)   return <p>Erreur : {error.message}</p>;
   if (!skillCategories || !skillsItems) return <p>Aucune compétence trouvée.</p>;
 
-  const loadSkills = () => {
-    setLoading(true);
-    Promise.all([get("/skill-categories"), get("/skill-items")])
-      .then(([categories, items]) => {
-        setSkillCategories(categories);
-        setSkillsItems(items);
-      })
-      .catch(setError)
-      .finally(() => setLoading(false));
-  };
-
-  const maxCategoryOrder = skillCategories.length > 0
-  ? Math.max(...skillCategories.map((category) => Number(category.order) || 0))
-  : 0;
-  const maxItemOrder = skillsItems.length > 0
-  ? Math.max(...skillsItems.map((item) => Number(item.order) || 0))
-  : 0;
+  const maxCategoryOrder = highestOrder(skillCategories);
+  const maxItemOrder = highestOrder(skillsItems);
 
   return (
     <section className="admin-skills">
@@ -81,12 +61,12 @@ export default function AdminSkills() {
 
         <div className="admin-skills__list">
           {skillCategories.map((category) => (
-            <article className="admin-skills__card" key={category.order}>
+            <article className="admin-skills__card" key={category.id}>
               <div className="admin-skills__category-header">
                 <div className="admin-skills__field">
                   <label>Titre de la catégorie</label>
                   <EditableField
-                    value={category.title}
+                    item={category}
                     route={`/skill-categories/${category.id}`}
                     fieldKey="title"
                   />
@@ -103,7 +83,7 @@ export default function AdminSkills() {
                   .map((item) => (
                     <div className="admin-skills__item" key={item.id}>
                       <EditableField
-                        value={item.label}
+                        item={item}
                         route={`/skill-items/${item.id}`}
                         fieldKey="label"
                       />

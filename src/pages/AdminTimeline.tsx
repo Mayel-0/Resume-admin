@@ -1,38 +1,17 @@
-import { useEffect, useState } from "react";
-import { useApi } from "../hooks/useApi";
+import { useResource } from "../hooks/useResource";
+import { highestOrder } from "../lib/order";
 import { EditableField } from "../components/EditableField";
 import { CreateField } from "../components/CreateField";
 import { DeleteButton } from "../components/DeleteField";
 
 export default function AdminTimeline() {
-  const {get} = useApi();
-  const [timelines, setTimeline] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    get("/timeline")
-      .then(setTimeline)
-      .catch(setError)
-      .finally(() => setLoading(false));
-  }, [])
-
+  const { data: timelines, loading, error, reload: loadTimeline } = useResource("/timeline");
 
   if (loading) return <p>chargement...</p>;
   if (error) return <p>Erreur : {error.message}</p>;
   if (!timelines) return <p>Aucun object trouvé</p>;
 
-      const loadTimeline = () => {
-    setLoading(true);
-    get("/timeline")
-      .then(setTimeline)
-      .catch(setError)
-      .finally(() => setLoading(false));
-  };
-
-    const maxOrder = timelines.length > 0
-  ? Math.max(...timelines.map((p) => Number(p.order) || 0))
-  : 0;
+  const maxOrder = highestOrder(timelines);
 
   return (
     <section className="admin-timeline">
@@ -58,11 +37,11 @@ export default function AdminTimeline() {
         </div>
         <div className="admin-timeline__list">
         {timelines.map((timeline) => (
-          <article key={timeline.order} className="admin-timeline__card">
+          <article key={timeline.id} className="admin-timeline__card">
             <div className="admin-timeline__field">
               <label>period</label>
               <EditableField
-                value={timeline.period}
+                item={timeline}
                 route={`/timeline/${timeline.id}`}
                 fieldKey="period"
               />
@@ -70,7 +49,7 @@ export default function AdminTimeline() {
             <div className="admin-timeline__field">
               <label>title</label>
               <EditableField
-                value={timeline.title}
+                item={timeline}
                 route={`/timeline/${timeline.id}`}
                 fieldKey="title"
               />
@@ -78,7 +57,7 @@ export default function AdminTimeline() {
             <div className="admin-timeline__field">
               <label>subtitle</label>
               <EditableField
-                value={timeline.subtitle}
+                item={timeline}
                 route={`/timeline/${timeline.id}`}
                 fieldKey="subtitle"
               />
@@ -86,7 +65,7 @@ export default function AdminTimeline() {
             <div className="admin-timeline__field">
               <label>text</label>
               <EditableField
-                value={timeline.text}
+                item={timeline}
                 route={`/timeline/${timeline.id}`}
                 fieldKey="text"
               />

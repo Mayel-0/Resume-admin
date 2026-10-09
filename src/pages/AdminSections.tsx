@@ -1,38 +1,18 @@
-import { useEffect, useState } from "react";
-import { useApi } from "../hooks/useApi";
+import { useResource } from "../hooks/useResource";
+import { highestOrder } from "../lib/order";
 import { EditableField } from "../components/EditableField";
 import { CreateField } from "../components/CreateField";
 import { DeleteButton } from "../components/DeleteField";
 
 
 export default function AdminSections() {
-  const {get} = useApi();
-  const [sections, setSections] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    get("/sections")
-      .then(setSections)
-      .catch(setError)
-      .finally(() => setLoading(false));
-  }, [])
+  const { data: sections, loading, error, reload: loadSections } = useResource("/sections");
 
   if (loading) return <p>Chargement…</p>;
   if (error)   return <p>Erreur : {error.message}</p>;
-  if (!sections) return <p>Aucun project trouvé.</p>;
+  if (!sections) return <p>Aucune section trouvée.</p>;
 
-    const loadSections = () => {
-    setLoading(true);
-    get("/sections")
-      .then(setSections)
-      .catch(setError)
-      .finally(() => setLoading(false));
-  };
-
-    const maxOrder = sections.length > 0
-  ? Math.max(...sections.map((p) => Number(p.order) || 0))
-  : 0;
+  const maxOrder = highestOrder(sections);
 
   return(
     <section className="admin-sections">
@@ -52,11 +32,11 @@ export default function AdminSections() {
         </div>
         <div className="admin-sections__list">
         {sections.map((section) => (
-          <article key={section.order} className="admin-sections__card">
+          <article key={section.id} className="admin-sections__card">
             <div className="admin-sections__field">
               <label>Titre</label>
               <EditableField
-                value={section.title}
+                item={section}
                 route={`/sections/${section.id}`}
                 fieldKey="title"
               />
@@ -64,7 +44,7 @@ export default function AdminSections() {
             <div className="admin-sections__field">
               <label>Text</label>
               <EditableField
-                value={section.html}
+                item={section}
                 route={`/sections/${section.id}`}
                 fieldKey="html"
                 type="html"

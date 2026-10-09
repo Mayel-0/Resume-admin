@@ -1,12 +1,13 @@
+import type { ReactNode } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/authContext";
 
-export function AdminLayout({ children }) {
+export function AdminLayout({ children }: { children: ReactNode }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
+    void logout();
     navigate("/login");
   };
 

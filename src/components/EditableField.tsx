@@ -1,12 +1,33 @@
 import { useState } from "react";
 import { useApi } from "../hooks/useApi";
+import { toError } from "../lib/errors";
+import type { ItemRoute, TextField } from "../models";
 
-export function EditableField({ value, route, fieldKey, type = "text" }) {
+interface EditableFieldProps<T> {
+  /** L'élément affiché (projet, section…) */
+  item: T;
+  /** Le champ texte à modifier : TypeScript refuse un nom qui n'existe pas */
+  fieldKey: TextField<T>;
+  /** Route de l'élément, ex. "/projects/12" */
+  route: ItemRoute;
+  /** "html" : zone de texte multi-ligne, rendue comme du HTML */
+  type?: "text" | "html";
+}
+
+export function EditableField<T extends object>({
+  item,
+  route,
+  fieldKey,
+  type = "text",
+}: EditableFieldProps<T>) {
+  const initial: unknown = item[fieldKey];
+  const value = typeof initial === "string" ? initial : "";
+
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
   const [saved, setSaved] = useState(value);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const { patch } = useApi();
 
   const handleSave = async () => {
@@ -14,10 +35,11 @@ export function EditableField({ value, route, fieldKey, type = "text" }) {
     setError(null);
     try {
       const updated = await patch(route, { [fieldKey]: draft });
-      setSaved(updated[fieldKey] ?? draft);
+      const next = updated[fieldKey];
+      setSaved(typeof next === "string" ? next : draft);
       setEditing(false);
     } catch (err) {
-      setError(err.message);
+      setError(toError(err).message);
     } finally {
       setLoading(false);
     }

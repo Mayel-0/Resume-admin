@@ -1,0 +1,13 @@
+node_modules
+dist
+.git
+.gitignore
+.DS_Store
+npm-debug.log*
+README.md
+Dockerfile
+.dockerignore
+
+# L'URL de l'API passe par --build-arg, pas par les fichiers .env
+.env
+.env.*
